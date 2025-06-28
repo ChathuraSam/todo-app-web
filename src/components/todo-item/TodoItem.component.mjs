@@ -1,13 +1,15 @@
-import "./todo-item.styles.css";
-const ToDoItem = ({ item }) => {
-  console.log(item);
+const TodoItem = ({ todo, onToggle, onDelete }) => {
   return (
     <div className="todo-item">
-      <h3>{item.title}</h3>
-      <h4>{item.description}</h4>
-      <h6>{item.todoStatus}</h6>
+      <input
+        type="checkbox"
+        checked={todo.completed}
+        onChange={() => onToggle(todo.id)}
+      />
+      <span className={todo.completed ? "completed" : ""}>{todo.title}</span>
+      <button onClick={() => onDelete(todo.id)}>Delete</button>
     </div>
   );
 };
 
-export default ToDoItem;
+export default TodoItem;

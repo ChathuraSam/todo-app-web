@@ -1,12 +1,15 @@
-import ToDoItem from "../todo-item/TodoItem.component.mjs";
+import TodoItem from "../todo-item/TodoItem.component.mjs";
 
-const TodoItemList = ({ list }) => {
-  console.log("TodoItemList", list);
+const TodoItemList = ({ todos, onToggle, onDelete }) => {
   return (
-    <div>
-      <h2>Todo List</h2>
-      {list.map((item) => (
-        <ToDoItem key={item.id} item={item} />
+    <div className="todo-list">
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.title}
+          todo={todo}
+          onToggle={onToggle}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );
