@@ -1,9 +1,9 @@
-const TodoItem = ({ todo, onToggle, onDelete, key }) => {
+const TodoItem = ({ todo, onToggle, onDelete }) => {
   return (
-    <div className="todo-item" key={key}>
+    <div className="todo-item">
       <input
         type="checkbox"
-        checked={todo.todoStatus === "COMPLETED" ? true : false}
+        checked={todo.todoStatus === "COMPLETED"}
         onChange={() => onToggle(todo.todoId)}
       />
       <span className={todo.todoStatus === "COMPLETED" ? "completed" : ""}>

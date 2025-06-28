@@ -24,12 +24,40 @@ const App = () => {
     setTodos([newTodo, ...todos]);
   };
 
-  const toggleComplete = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const toggleComplete = async (id) => {
+    const todoToUpdate = todos.find((todo) => todo.todoId === id);
+    if (!todoToUpdate) return;
+
+    // Toggle status
+    const newStatus =
+      todoToUpdate.todoStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
+
+    // Send PATCH request to backend
+    try {
+      const response = await fetch("Prod/todo", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: todoToUpdate.userId,
+          todoId: todoToUpdate.todoId,
+          status: newStatus.toLowerCase(),
+        }),
+      });
+
+      if (response.ok) {
+        setTodos(
+          todos.map((todo) =>
+            todo.todoId === id ? { ...todo, todoStatus: newStatus } : todo
+          )
+        );
+      } else {
+        console.error("Failed to update todo status");
+      }
+    } catch (error) {
+      console.error("Error updating todo status:", error);
+    }
   };
 
   const deleteTodo = (id) => {
@@ -43,8 +71,8 @@ const App = () => {
       <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
-        onToggle={toggleComplete}
-        onDelete={deleteTodo}
+        handleToggle={toggleComplete}
+        handleDelete={deleteTodo}
       />
     </div>
   );
