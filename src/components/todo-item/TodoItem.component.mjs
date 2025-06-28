@@ -3,10 +3,12 @@ const TodoItem = ({ todo, onToggle, onDelete, key }) => {
     <div className="todo-item" key={key}>
       <input
         type="checkbox"
-        checked={todo.completed}
+        checked={todo.todoStatus === "COMPLETED" ? true : false}
         onChange={() => onToggle(todo.todoId)}
       />
-      <span className={todo.completed ? "completed" : ""}>{todo.title}</span>
+      <span className={todo.todoStatus === "COMPLETED" ? "completed" : ""}>
+        {todo.title}
+      </span>
       <button onClick={() => onDelete(todo.todoId)}>Delete</button>
     </div>
   );
