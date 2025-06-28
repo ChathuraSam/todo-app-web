@@ -1,23 +1,20 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs";
 
 function App() {
+  const [realTodoItems, setRealTodoItems] = useState([]);
+
+  useEffect(() => {
+    fetch("/Prod/todo")
+      .then((response) => response.json())
+      .then((data) => setRealTodoItems(data))
+      .catch((error) => console.error(error));
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <TodoItemList list={realTodoItems} />
     </div>
   );
 }
