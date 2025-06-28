@@ -15,13 +15,8 @@ const App = () => {
       .catch((error) => console.error(error));
   }, []);
 
-  const addTodo = (text) => {
-    const newTodo = {
-      id: Date.now(),
-      text,
-      completed: false,
-    };
-    setTodos([newTodo, ...todos]);
+  const addTodo = (newTodo) => {
+    setTodos((prevTodos) => [newTodo, ...prevTodos]);
   };
 
   const toggleComplete = async (id) => {
