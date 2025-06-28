@@ -6,7 +6,7 @@ function App() {
   const [realTodoItems, setRealTodoItems] = useState([]);
 
   useEffect(() => {
-    fetch("/Prod/todo")
+    fetch("https://7hxjfm3grd.execute-api.us-east-1.amazonaws.com/Prod/todo")
       .then((response) => response.json())
       .then((data) => setRealTodoItems(data))
       .catch((error) => console.error(error));
