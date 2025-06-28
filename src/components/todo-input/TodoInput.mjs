@@ -3,11 +3,31 @@ import React, { useState } from "react";
 const TodoInput = ({ onAdd }) => {
   const [text, setText] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (text.trim()) {
-      onAdd(text.trim());
-      setText("");
+      try {
+        const response = await fetch("Prod/todo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: "chathuras940@gmail.com",
+            todoId: Date.now().toString(),
+            title: text.trim(),
+          }),
+        });
+        if (response.ok) {
+          const newTodo = await response.json();
+          onAdd(newTodo);
+          setText("");
+        } else {
+          console.error("Failed to add todo");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
 
