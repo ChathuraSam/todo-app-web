@@ -1,13 +1,13 @@
-const TodoItem = ({ todo, onToggle, onDelete }) => {
+const TodoItem = ({ todo, onToggle, onDelete, key }) => {
   return (
-    <div className="todo-item">
+    <div className="todo-item" key={key}>
       <input
         type="checkbox"
         checked={todo.completed}
-        onChange={() => onToggle(todo.id)}
+        onChange={() => onToggle(todo.todoId)}
       />
       <span className={todo.completed ? "completed" : ""}>{todo.title}</span>
-      <button onClick={() => onDelete(todo.id)}>Delete</button>
+      <button onClick={() => onDelete(todo.todoId)}>Delete</button>
     </div>
   );
 };
