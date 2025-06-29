@@ -56,8 +56,30 @@ const App = () => {
     }
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTodo = async (id) => {
+    const todoToDelete = todos.find((todo) => todo.todoId === id);
+    if (!todoToDelete) return;
+
+    try {
+      const response = await fetch(`${API_URL}/todo`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: todoToDelete.userId,
+          todoId: todoToDelete.todoId,
+        }),
+      });
+
+      if (response.ok) {
+        setTodos(todos.filter((todo) => todo.todoId !== id));
+      } else {
+        console.error("Failed to delete todo");
+      }
+    } catch (error) {
+      console.error("Error deleting todo:", error);
+    }
   };
 
   return (
