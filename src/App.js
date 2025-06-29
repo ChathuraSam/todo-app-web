@@ -93,7 +93,7 @@ const App = () => {
   return (
     <div className="todo-container">
       <TopMenu />
-      <h1>Todo App</h1>
+      <h1>AWS Powered Todo App.</h1>
       {apiInProgress && <ProgressCircle />}
       <TodoInput onAdd={addTodo} />
       <TodoItemList
