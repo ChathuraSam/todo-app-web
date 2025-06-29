@@ -67,8 +67,8 @@ const App = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: todoToDelete.userId,
-          todoId: todoToDelete.todoId,
+          userId: "chathuras940@gmail.com",
+          todoId: id,
         }),
       });
 
