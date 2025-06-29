@@ -9,7 +9,7 @@ import ProgressCircle from "./components/progress/ProgressCircle.mjs";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [apiInProgress, setApiInProgress] = useState(false);
+  const [apiInProgress, setApiInProgress] = useState(true);
 
   useEffect(() => {
     setApiInProgress(true);
