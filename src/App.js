@@ -9,15 +9,15 @@ import ProgressCircle from "./components/progress/ProgressCircle.mjs";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [apiInProgress, setApiInProgress] = useState(true);
+  const [apiInProgress, setApiInProgress] = useState("true");
 
   useEffect(() => {
-    setApiInProgress(true);
+    setApiInProgress("true");
     fetch(`${API_URL}/todo`)
       .then((response) => response.json())
       .then((data) => setTodos(data))
       .catch((error) => console.error(error));
-    setApiInProgress(false);
+    setApiInProgress("false");
   }, []);
 
   const addTodo = (newTodo) => {
@@ -34,7 +34,7 @@ const App = () => {
 
     // Send PATCH request to backend
     try {
-      setApiInProgress(true);
+      setApiInProgress("true");
       const response = await fetch(`${API_URL}/todo`, {
         method: "PATCH",
         headers: {
@@ -46,7 +46,7 @@ const App = () => {
           status: newStatus.toLowerCase(),
         }),
       });
-      setApiInProgress(false);
+      setApiInProgress("false");
 
       if (response.ok) {
         setTodos(
@@ -67,7 +67,7 @@ const App = () => {
     if (!todoToDelete) return;
 
     try {
-      setApiInProgress(true);
+      setApiInProgress("true");
       const response = await fetch(`${API_URL}/todo`, {
         method: "DELETE",
         headers: {
@@ -78,7 +78,7 @@ const App = () => {
           todoId: id,
         }),
       });
-      setApiInProgress(false);
+      setApiInProgress("false");
 
       if (response.ok) {
         setTodos(todos.filter((todo) => todo.todoId !== id));
@@ -94,7 +94,8 @@ const App = () => {
     <div className="todo-container">
       <TopMenu />
       <h1>AWS Powered Todo App.</h1>
-      {apiInProgress && <ProgressCircle />}
+      {console.log(apiInProgress)}
+      {apiInProgress == "true" && <ProgressCircle />}
       <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
