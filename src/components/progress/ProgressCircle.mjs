@@ -8,6 +8,8 @@ const ProgressCircle = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
+  console.log("ProgressCircle loaded");
+
   return (
     <svg
       width={size}
