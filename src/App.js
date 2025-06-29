@@ -5,9 +5,11 @@ import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs
 import TodoInput from "./components/todo-input/TodoInput.mjs";
 import TopMenu from "./components/top-menu/TopMenu.mjs";
 import { API_URL } from "./const.mjs";
+import ProgressCircle from "./components/progress/ProgressCircle.mjs";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   useEffect(() => {
     fetch(`${API_URL}/todo`)
@@ -30,6 +32,7 @@ const App = () => {
 
     // Send PATCH request to backend
     try {
+      setApiInProgress(true);
       const response = await fetch(`${API_URL}/todo`, {
         method: "PATCH",
         headers: {
@@ -41,6 +44,7 @@ const App = () => {
           status: newStatus.toLowerCase(),
         }),
       });
+      setApiInProgress(false);
 
       if (response.ok) {
         setTodos(
@@ -61,6 +65,7 @@ const App = () => {
     if (!todoToDelete) return;
 
     try {
+      setApiInProgress(true);
       const response = await fetch(`${API_URL}/todo`, {
         method: "DELETE",
         headers: {
@@ -71,6 +76,7 @@ const App = () => {
           todoId: id,
         }),
       });
+      setApiInProgress(false);
 
       if (response.ok) {
         setTodos(todos.filter((todo) => todo.todoId !== id));
@@ -86,6 +92,11 @@ const App = () => {
     <div className="todo-container">
       <TopMenu />
       <h1>Todo App</h1>
+      {apiInProgress && (
+        <div className="api-progress">
+          <ProgressCircle size={50} strokeWidth={4} spinning={true} />
+        </div>
+      )}
       <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
