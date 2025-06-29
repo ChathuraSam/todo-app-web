@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { API_URL } from "../../const.mjs";
 
 const TodoInput = ({ onAdd }) => {
   const [text, setText] = useState("");
@@ -7,7 +8,7 @@ const TodoInput = ({ onAdd }) => {
     e.preventDefault();
     if (text.trim()) {
       try {
-        const response = await fetch("Prod/todo", {
+        const response = await fetch(`${API_URL}/todo`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

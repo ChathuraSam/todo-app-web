@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs";
 import TodoInput from "./components/todo-input/TodoInput.mjs";
 import TopMenu from "./components/top-menu/TopMenu.mjs";
+import { API_URL } from "./const.mjs";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    fetch("https://7hxjfm3grd.execute-api.us-east-1.amazonaws.com/Prod/todo")
+    fetch(`${API_URL}/todo`)
       .then((response) => response.json())
       .then((data) => setTodos(data))
       .catch((error) => console.error(error));
@@ -29,7 +30,7 @@ const App = () => {
 
     // Send PATCH request to backend
     try {
-      const response = await fetch("Prod/todo", {
+      const response = await fetch(`${API_URL}/todo`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
