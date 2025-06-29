@@ -12,10 +12,12 @@ const App = () => {
   const [apiInProgress, setApiInProgress] = useState(false);
 
   useEffect(() => {
+    setApiInProgress(true);
     fetch(`${API_URL}/todo`)
       .then((response) => response.json())
       .then((data) => setTodos(data))
       .catch((error) => console.error(error));
+    setApiInProgress(false);
   }, []);
 
   const addTodo = (newTodo) => {
@@ -92,11 +94,7 @@ const App = () => {
     <div className="todo-container">
       <TopMenu />
       <h1>Todo App</h1>
-      {apiInProgress && (
-        <div className="api-progress">
-          <ProgressCircle size={50} strokeWidth={4} spinning={true} />
-        </div>
-      )}
+      {apiInProgress && <ProgressCircle />}
       <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
