@@ -34,7 +34,7 @@ const App = () => {
 
     // Send PATCH request to backend
     try {
-      setApiInProgress("true");
+      setApiInProgress(true);
       const response = await fetch(`${API_URL}/todo`, {
         method: "PATCH",
         headers: {
@@ -46,7 +46,7 @@ const App = () => {
           status: newStatus.toLowerCase(),
         }),
       });
-      setApiInProgress("false");
+      setApiInProgress(false);
 
       if (response.ok) {
         setTodos(
@@ -67,7 +67,7 @@ const App = () => {
     if (!todoToDelete) return;
 
     try {
-      setApiInProgress("true");
+      setApiInProgress(true);
       const response = await fetch(`${API_URL}/todo`, {
         method: "DELETE",
         headers: {
@@ -78,7 +78,7 @@ const App = () => {
           todoId: id,
         }),
       });
-      setApiInProgress("false");
+      setApiInProgress(false);
 
       if (response.ok) {
         setTodos(todos.filter((todo) => todo.todoId !== id));
