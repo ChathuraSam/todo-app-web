@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { API_URL } from "../../const.mjs";
+import ProgressCircle from "../progress/ProgressCircle.mjs";
 
 const TodoInput = ({ onAdd }) => {
   const [text, setText] = useState("");
+  const [apiInProgress, setApiInProgress] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (text.trim()) {
       try {
+        setApiInProgress(true);
         const response = await fetch(`${API_URL}/todo`, {
           method: "POST",
           headers: {
@@ -23,11 +26,14 @@ const TodoInput = ({ onAdd }) => {
           const newTodo = await response.json();
           onAdd(newTodo);
           setText("");
+          setApiInProgress(false);
         } else {
           console.error("Failed to add todo");
+          setApiInProgress(false);
         }
       } catch (error) {
         console.error("Error:", error);
+        setApiInProgress(false);
       }
     }
   };
@@ -41,6 +47,7 @@ const TodoInput = ({ onAdd }) => {
         placeholder="Add a new task"
       />
       <button type="submit">Add</button>
+      {apiInProgress && <ProgressCircle size={30} />}
     </form>
   );
 };
