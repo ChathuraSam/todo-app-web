@@ -9,15 +9,15 @@ import ProgressCircle from "./components/progress/ProgressCircle.mjs";
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [apiInProgress, setApiInProgress] = useState("true");
+  const [apiInProgress, setApiInProgress] = useState(true);
 
   useEffect(() => {
-    setApiInProgress("true");
+    setApiInProgress(true);
     fetch(`${API_URL}/todo`)
       .then((response) => response.json())
       .then((data) => setTodos(data))
-      .catch((error) => console.error(error));
-    setApiInProgress("false");
+      .catch((error) => console.error(error))
+      .finally(() => setApiInProgress(false));
   }, []);
 
   const addTodo = (newTodo) => {
@@ -95,7 +95,7 @@ const App = () => {
       <TopMenu />
       <h1>AWS Powered Todo App.</h1>
       {console.log(apiInProgress)}
-      {apiInProgress == "true" && <ProgressCircle />}
+      {apiInProgress && <ProgressCircle />}
       <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
