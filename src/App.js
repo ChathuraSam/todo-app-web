@@ -131,14 +131,13 @@ function App() {
         />
       </div>
     );
+  } else {
+    return (
+      <div>
+        <button onClick={() => auth.signinRedirect()}>Sign in</button>
+      </div>
+    );
   }
-
-  return (
-    <div>
-      <button onClick={() => auth.signinRedirect()}>Sign in</button>
-      <button onClick={() => signOutRedirect()}>Sign out</button>
-    </div>
-  );
 }
 
 export default App;
