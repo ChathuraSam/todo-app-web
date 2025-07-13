@@ -14,6 +14,7 @@ function App() {
   const [apiInProgress, setApiInProgress] = useState(true);
 
   useEffect(() => {
+    console.log(`id token***: ${auth.user?.id_token}`);
     setApiInProgress(true);
     fetch(`${API_URL}/todo`, {
       headers: {
