@@ -1,109 +1,47 @@
-import "./App.css";
-import { useEffect, useState } from "react";
+// App.js
 
-import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs";
-import TodoInput from "./components/todo-input/TodoInput.mjs";
-import TopMenu from "./components/top-menu/TopMenu.mjs";
-import { API_URL } from "./const.mjs";
-import ProgressCircle from "./components/progress/ProgressCircle.mjs";
+import { useAuth } from "react-oidc-context";
 
-const App = () => {
-  const [todos, setTodos] = useState([]);
-  const [apiInProgress, setApiInProgress] = useState(true);
+function App() {
+  const auth = useAuth();
 
-  useEffect(() => {
-    setApiInProgress(true);
-    fetch(`${API_URL}/todo`)
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error(error))
-      .finally(() => setApiInProgress(false));
-  }, []);
-
-  const addTodo = (newTodo) => {
-    setTodos((prevTodos) => [newTodo, ...prevTodos]);
+  const signOutRedirect = () => {
+    const clientId = "6tb1dlmmp6p58coevc310ovl4i";
+    const logoutUri = "<logout uri>";
+    const cognitoDomain =
+      "https://us-east-1lpk3jsfsd.auth.us-east-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri
+    )}`;
   };
 
-  const toggleComplete = async (id) => {
-    const todoToUpdate = todos.find((todo) => todo.todoId === id);
-    if (!todoToUpdate) return;
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
 
-    // Toggle status
-    const newStatus =
-      todoToUpdate.todoStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
+  if (auth.error) {
+    return <div>Encountering error... {auth.error.message}</div>;
+  }
 
-    // Send PATCH request to backend
-    try {
-      setApiInProgress(true);
-      const response = await fetch(`${API_URL}/todo`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: todoToUpdate.userId,
-          todoId: todoToUpdate.todoId,
-          status: newStatus.toLowerCase(),
-        }),
-      });
-      setApiInProgress(false);
+  if (auth.isAuthenticated) {
+    return (
+      <div>
+        <pre> Hello: {auth.user?.profile.email} </pre>
+        <pre> ID Token: {auth.user?.id_token} </pre>
+        <pre> Access Token: {auth.user?.access_token} </pre>
+        <pre> Refresh Token: {auth.user?.refresh_token} </pre>
 
-      if (response.ok) {
-        setTodos(
-          todos.map((todo) =>
-            todo.todoId === id ? { ...todo, todoStatus: newStatus } : todo
-          )
-        );
-      } else {
-        console.error("Failed to update todo status");
-      }
-    } catch (error) {
-      console.error("Error updating todo status:", error);
-    }
-  };
-
-  const deleteTodo = async (id) => {
-    const todoToDelete = todos.find((todo) => todo.todoId === id);
-    if (!todoToDelete) return;
-
-    try {
-      setApiInProgress(true);
-      const response = await fetch(`${API_URL}/todo`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: "chathuras940@gmail.com",
-          todoId: id,
-        }),
-      });
-      setApiInProgress(false);
-
-      if (response.ok) {
-        setTodos(todos.filter((todo) => todo.todoId !== id));
-      } else {
-        console.error("Failed to delete todo");
-      }
-    } catch (error) {
-      console.error("Error deleting todo:", error);
-    }
-  };
+        <button onClick={() => auth.removeUser()}>Sign out</button>
+      </div>
+    );
+  }
 
   return (
-    <div className="todo-container">
-      <TopMenu />
-      <h1>AWS Powered Todo App.</h1>
-      {console.log(apiInProgress)}
-      {apiInProgress && <ProgressCircle />}
-      <TodoInput onAdd={addTodo} />
-      <TodoItemList
-        todos={todos}
-        handleToggle={toggleComplete}
-        handleDelete={deleteTodo}
-      />
+    <div>
+      <button onClick={() => auth.signinRedirect()}>Sign in</button>
+      <button onClick={() => signOutRedirect()}>Sign out</button>
     </div>
   );
-};
+}
 
 export default App;

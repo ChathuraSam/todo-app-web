@@ -1,13 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { AuthProvider } from "react-oidc-context";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const cognitoAuthConfig = {
+  authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_lPk3jsfSD",
+  client_id: "6tb1dlmmp6p58coevc310ovl4i",
+  redirect_uri: "https://todo-app.chathuras.dev/",
+  response_type: "code",
+  scope: "phone openid email",
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <AuthProvider {...cognitoAuthConfig}>
+      <App />
+    </AuthProvider>
   </React.StrictMode>
 );
 
