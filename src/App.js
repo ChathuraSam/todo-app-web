@@ -1,3 +1,4 @@
+import "./App.css";
 import { useEffect, useState } from "react";
 import { useAuth } from "react-oidc-context";
 
@@ -110,13 +111,9 @@ function App() {
   };
 
   if (auth.isAuthenticated) {
+    console.log("User is authenticated:", auth.user);
     return (
       <div className="todo-container">
-        <pre> Hello: {auth.user?.profile.email} </pre>
-        <pre> ID Token: {auth.user?.id_token} </pre>
-        <pre> Access Token: {auth.user?.access_token} </pre>
-        <pre> Refresh Token: {auth.user?.refresh_token} </pre>
-
         <button onClick={() => auth.removeUser()}>Sign out</button>
 
         <TopMenu />
