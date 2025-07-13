@@ -12,6 +12,15 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [apiInProgress, setApiInProgress] = useState(true);
 
+  useEffect(() => {
+    setApiInProgress(true);
+    fetch(`${API_URL}/todo`)
+      .then((response) => response.json())
+      .then((data) => setTodos(data))
+      .catch((error) => console.error(error))
+      .finally(() => setApiInProgress(false));
+  }, []);
+
   const signOutRedirect = () => {
     const clientId = "6tb1dlmmp6p58coevc310ovl4i";
     const logoutUri = "<logout uri>";
@@ -29,15 +38,6 @@ function App() {
   if (auth.error) {
     return <div>Encountering error... {auth.error.message}</div>;
   }
-
-  useEffect(() => {
-    setApiInProgress(true);
-    fetch(`${API_URL}/todo`)
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error(error))
-      .finally(() => setApiInProgress(false));
-  }, []);
 
   const addTodo = (newTodo) => {
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
