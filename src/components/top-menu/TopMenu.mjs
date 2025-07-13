@@ -9,7 +9,7 @@ const TopMenu = ({ isLoggedIn, username, onLogin, onLogout }) => (
     }}
   >
     <div>
-      <strong>Hi Chathura</strong>
+      <strong>Hi {username}</strong>
     </div>
     <div>
       {isLoggedIn ? (
