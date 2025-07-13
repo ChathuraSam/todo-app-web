@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { API_URL } from "../../const.mjs";
 import ProgressCircle from "../progress/ProgressCircle.mjs";
 
-const TodoInput = ({ onAdd }) => {
+const TodoInput = ({ onAdd, username }) => {
   const [text, setText] = useState("");
   const [apiInProgress, setApiInProgress] = useState(false);
 
@@ -17,7 +17,7 @@ const TodoInput = ({ onAdd }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: "chathuras940@gmail.com",
+            userId: username,
             todoId: Date.now().toString(),
             title: text.trim(),
           }),
