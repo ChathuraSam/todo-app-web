@@ -1,4 +1,4 @@
-const TopMenu = ({ isLoggedIn, profileName, onLogin, onLogout }) => (
+const TopMenu = ({ isLoggedIn, username, onLogin, onLogout }) => (
   <nav
     style={{
       display: "flex",
@@ -14,7 +14,7 @@ const TopMenu = ({ isLoggedIn, profileName, onLogin, onLogout }) => (
     <div>
       {isLoggedIn ? (
         <>
-          <span style={{ marginRight: "1rem" }}>Hello, {profileName}</span>
+          <span style={{ marginRight: "1rem" }}>Hello, {username}</span>
           <button onClick={onLogout}>Logout</button>
         </>
       ) : (

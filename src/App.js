@@ -116,7 +116,7 @@ function App() {
       <div className="todo-container">
         <button onClick={() => auth.removeUser()}>Sign out</button>
 
-        <TopMenu />
+        <TopMenu username={auth.profile?.email} />
         <h1>AWS Powered Todo App.</h1>
         {console.log(apiInProgress)}
         {apiInProgress && <ProgressCircle />}
