@@ -13,20 +13,20 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [apiInProgress, setApiInProgress] = useState(true);
 
-  useEffect(() => {
-    console.log(`id token***: ${auth.user?.id_token}`);
-    setApiInProgress(true);
-    fetch(`${API_URL}/todo`, {
-      headers: {
-        Authorization: `Bearer ${auth.user?.id_token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error(error))
-      .finally(() => setApiInProgress(false));
-  }, []);
+  // useEffect(() => {
+  //   console.log(`id token***: ${auth.user?.id_token}`);
+  //   setApiInProgress(true);
+  //   fetch(`${API_URL}/todo`, {
+  //     headers: {
+  //       Authorization: `Bearer ${auth.user?.id_token}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => setTodos(data))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setApiInProgress(false));
+  // }, []);
 
   const signOutRedirect = () => {
     const clientId = "6tb1dlmmp6p58coevc310ovl4i";
@@ -118,6 +118,19 @@ function App() {
 
   if (auth.isAuthenticated) {
     console.log("User is authenticated:", auth.user);
+    console.log(`id token***: ${auth.user?.id_token}`);
+    setApiInProgress(true);
+    fetch(`${API_URL}/todo`, {
+      headers: {
+        Authorization: `Bearer ${auth.user?.id_token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setTodos(data))
+      .catch((error) => console.error(error))
+      .finally(() => setApiInProgress(false));
+
     return (
       <div className="todo-container">
         <button onClick={() => auth.removeUser()}>Sign out</button>
