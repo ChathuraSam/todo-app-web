@@ -15,7 +15,12 @@ function App() {
 
   useEffect(() => {
     setApiInProgress(true);
-    fetch(`${API_URL}/todo`)
+    fetch(`${API_URL}/todo`, {
+      headers: {
+        Authorization: `Bearer ${auth.user?.id_token}`,
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => response.json())
       .then((data) => setTodos(data))
       .catch((error) => console.error(error))
