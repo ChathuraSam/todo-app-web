@@ -1,5 +1,6 @@
 import "./App.css";
 import { useEffect, useState } from "react";
+import { useAuth } from "react-oidc-context";
 
 import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs";
 import TodoInput from "./components/todo-input/TodoInput.mjs";
@@ -7,32 +8,25 @@ import TopMenu from "./components/top-menu/TopMenu.mjs";
 import { API_URL } from "./const.mjs";
 import ProgressCircle from "./components/progress/ProgressCircle.mjs";
 
-import { useAuth } from "react-oidc-context";
-
-const App = () => {
+function App() {
   const auth = useAuth();
   const [todos, setTodos] = useState([]);
   const [apiInProgress, setApiInProgress] = useState(true);
 
-  useEffect(() => {
-    if (!auth.isAuthenticated || !auth.user?.id_token) return;
-
-    setApiInProgress(true);
-    fetch(`${API_URL}/todo`, {
-      headers: {
-        Authorization: `Bearer ${auth.user.id_token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error(error))
-      .finally(() => setApiInProgress(false));
-  }, [auth.isAuthenticated, auth.user]);
-
-  const addTodo = (newTodo) => {
-    setTodos((prevTodos) => [newTodo, ...prevTodos]);
-  };
+  // useEffect(() => {
+  //   console.log(`id token***: ${auth.user?.id_token}`);
+  //   setApiInProgress(true);
+  //   fetch(`${API_URL}/todo`, {
+  //     headers: {
+  //       Authorization: `Bearer ${auth.user?.id_token}`,
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => setTodos(data))
+  //     .catch((error) => console.error(error))
+  //     .finally(() => setApiInProgress(false));
+  // }, []);
 
   const signOutRedirect = () => {
     const clientId = "6tb1dlmmp6p58coevc310ovl4i";
@@ -52,25 +46,9 @@ const App = () => {
     return <div>Encountering error... {auth.error.message}</div>;
   }
 
-  if (auth.isAuthenticated) {
-    return (
-      <div>
-        <pre> Hello: {auth.user?.profile.email} </pre>
-        <pre> ID Token: {auth.user?.id_token} </pre>
-        <pre> Access Token: {auth.user?.access_token} </pre>
-        <pre> Refresh Token: {auth.user?.refresh_token} </pre>
-
-        <button onClick={() => auth.removeUser()}>Sign out</button>
-      </div>
-    );
-  }
-
-  // return (
-  //   <div>
-  //     <button onClick={() => auth.signinRedirect()}>Sign in</button>
-  //     <button onClick={() => signOutRedirect()}>Sign out</button>
-  //   </div>
-  // );
+  const addTodo = (newTodo) => {
+    setTodos((prevTodos) => [newTodo, ...prevTodos]);
+  };
 
   const toggleComplete = async (id) => {
     const todoToUpdate = todos.find((todo) => todo.todoId === id);
@@ -138,24 +116,44 @@ const App = () => {
     }
   };
 
-  return (
-    <div className="todo-container">
+  if (auth.isAuthenticated) {
+    console.log("User is authenticated:", auth.user);
+    console.log(`id token***: ${auth.user?.id_token}`);
+    setApiInProgress(true);
+    fetch(`${API_URL}/todo`, {
+      headers: {
+        Authorization: `Bearer ${auth.user?.id_token}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => setTodos(data))
+      .catch((error) => console.error(error))
+      .finally(() => setApiInProgress(false));
+
+    return (
+      <div className="todo-container">
+        <button onClick={() => auth.removeUser()}>Sign out</button>
+
+        <TopMenu username={auth.user?.profile.email} />
+        <h1>AWS Powered Todo App.</h1>
+        {console.log(apiInProgress)}
+        {apiInProgress && <ProgressCircle />}
+        <TodoInput username={auth.user?.profile.email} onAdd={addTodo} />
+        <TodoItemList
+          todos={todos}
+          handleToggle={toggleComplete}
+          handleDelete={deleteTodo}
+        />
+      </div>
+    );
+  } else {
+    return (
       <div>
         <button onClick={() => auth.signinRedirect()}>Sign in</button>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
       </div>
-      <TopMenu />
-      <h1>AWS Powered Todo App.</h1>
-      {console.log(apiInProgress)}
-      {apiInProgress && <ProgressCircle />}
-      {/* <TodoInput onAdd={addTodo} /> */}
-      <TodoItemList
-        todos={todos}
-        handleToggle={toggleComplete}
-        handleDelete={deleteTodo}
-      />
-    </div>
-  );
-};
+    );
+  }
+}
 
 export default App;
