@@ -8,12 +8,9 @@ import { AuthProvider } from "react-oidc-context";
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_lPk3jsfSD",
   client_id: "6tb1dlmmp6p58coevc310ovl4i",
-  redirect_uri: "https://todo-app.chathuras.dev/",
+  redirect_uri: "http://localhost:3000",
   response_type: "code",
-  scope: "phone openid email",
-  onSigninCallback: (_user) => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  },
+  scope: "email openid phone",
 };
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
