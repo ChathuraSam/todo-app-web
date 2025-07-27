@@ -148,7 +148,7 @@ const App = () => {
       <h1>AWS Powered Todo App.</h1>
       {console.log(apiInProgress)}
       {apiInProgress && <ProgressCircle />}
-      {/* <TodoInput onAdd={addTodo} /> */}
+      <TodoInput onAdd={addTodo} />
       <TodoItemList
         todos={todos}
         handleToggle={toggleComplete}

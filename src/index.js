@@ -10,7 +10,7 @@ const cognitoAuthConfig = {
   client_id: "6tb1dlmmp6p58coevc310ovl4i",
   // redirect_uri: "http://localhost:3000",
   redirect_uri: "https://todo-app.chathuras.dev/",
-  response_type: "code",
+  response_type: "token",
   scope: "email openid phone",
 };
 
