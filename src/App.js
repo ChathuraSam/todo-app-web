@@ -34,44 +34,6 @@ const App = () => {
     setTodos((prevTodos) => [newTodo, ...prevTodos]);
   };
 
-  const signOutRedirect = () => {
-    const clientId = "6tb1dlmmp6p58coevc310ovl4i";
-    const logoutUri = "<logout uri>";
-    const cognitoDomain =
-      "https://us-east-1lpk3jsfsd.auth.us-east-1.amazoncognito.com";
-    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
-      logoutUri
-    )}`;
-  };
-
-  if (auth.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (auth.error) {
-    return <div>Encountering error... {auth.error.message}</div>;
-  }
-
-  if (auth.isAuthenticated) {
-    return (
-      <div className="todo-container">
-        <TopMenu
-          isLoggedIn={true}
-          profileName={auth.user?.profile.email}
-          onLogout={() => auth.removeUser()}
-        />
-        <h1>AWS Powered Todo App.</h1>
-        {apiInProgress && <ProgressCircle />}
-        <TodoInput onAdd={addTodo} />
-        <TodoItemList
-          todos={todos}
-          handleToggle={toggleComplete}
-          handleDelete={deleteTodo}
-        />
-      </div>
-    );
-  }
-
   const toggleComplete = async (id) => {
     const todoToUpdate = todos.find((todo) => todo.todoId === id);
     if (!todoToUpdate) return;
@@ -139,6 +101,44 @@ const App = () => {
       console.error("Error deleting todo:", error);
     }
   };
+
+  const signOutRedirect = () => {
+    const clientId = "6tb1dlmmp6p58coevc310ovl4i";
+    const logoutUri = "<logout uri>";
+    const cognitoDomain =
+      "https://us-east-1lpk3jsfsd.auth.us-east-1.amazoncognito.com";
+    window.location.href = `${cognitoDomain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(
+      logoutUri
+    )}`;
+  };
+
+  if (auth.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (auth.error) {
+    return <div>Encountering error... {auth.error.message}</div>;
+  }
+
+  if (auth.isAuthenticated) {
+    return (
+      <div className="todo-container">
+        <TopMenu
+          isLoggedIn={true}
+          profileName={auth.user?.profile.email}
+          onLogout={() => auth.removeUser()}
+        />
+        <h1>AWS Powered Todo App.</h1>
+        {apiInProgress && <ProgressCircle />}
+        <TodoInput onAdd={addTodo} />
+        <TodoItemList
+          todos={todos}
+          handleToggle={toggleComplete}
+          handleDelete={deleteTodo}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="todo-container">
