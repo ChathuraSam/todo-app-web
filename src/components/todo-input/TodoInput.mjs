@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { API_URL } from "../../const.mjs";
 import ProgressCircle from "../progress/ProgressCircle.mjs";
+import TodoService from "../../services/todoService.js";
 
-const TodoInput = ({ onAdd, username }) => {
+const TodoInput = ({ onAdd, email, accessToken }) => {
   const [text, setText] = useState("");
   const [apiInProgress, setApiInProgress] = useState(false);
 
@@ -11,28 +11,13 @@ const TodoInput = ({ onAdd, username }) => {
     if (text.trim()) {
       try {
         setApiInProgress(true);
-        const response = await fetch(`${API_URL}/todo`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId: username,
-            todoId: Date.now().toString(),
-            title: text.trim(),
-          }),
-        });
-        if (response.ok) {
-          const newTodo = await response.json();
-          onAdd(newTodo);
-          setText("");
-          setApiInProgress(false);
-        } else {
-          console.error("Failed to add todo");
-          setApiInProgress(false);
-        }
+        const todoService = new TodoService(accessToken);
+        const newTodo = await todoService.createTodo(email, text.trim());
+        onAdd(newTodo);
+        setText("");
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error creating todo:", error);
+      } finally {
         setApiInProgress(false);
       }
     }

@@ -14,7 +14,6 @@ const TopMenu = ({ isLoggedIn, username, onLogin, onLogout }) => (
     <div>
       {isLoggedIn ? (
         <>
-          <span style={{ marginRight: "1rem" }}>Hello, {username}</span>
           <button onClick={onLogout}>Logout</button>
         </>
       ) : (

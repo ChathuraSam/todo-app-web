@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import TodoItemList from "./components/todo-item-list/TodoItemList.component.mjs";
 import TodoInput from "./components/todo-input/TodoInput.mjs";
 import TopMenu from "./components/top-menu/TopMenu.mjs";
-import { API_URL } from "./const.mjs";
 import ProgressCircle from "./components/progress/ProgressCircle.mjs";
+import TodoService from "./services/todoService.js";
 
 import { useAuth } from "react-oidc-context";
 
@@ -13,21 +13,43 @@ const App = () => {
   const auth = useAuth();
   const [todos, setTodos] = useState([]);
   const [apiInProgress, setApiInProgress] = useState(true);
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
-    if (!auth.isAuthenticated || !auth.user?.id_token) return;
+    if (!auth.isAuthenticated || !auth.user?.access_token) return;
 
-    setApiInProgress(true);
-    fetch(`${API_URL}/todo`, {
-      headers: {
-        Authorization: `Bearer ${auth.user.id_token}`,
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => setTodos(data))
-      .catch((error) => console.error(error))
-      .finally(() => setApiInProgress(false));
+    const fetchUserInfoAndTodos = async () => {
+      try {
+        // Fetch username from Cognito userInfo endpoint
+        const userInfoResponse = await fetch(
+          "https://us-east-1lpk3jsfsd.auth.us-east-1.amazoncognito.com/oauth2/userInfo",
+          {
+            headers: {
+              Authorization: `Bearer ${auth.user.access_token}`,
+            },
+          }
+        );
+        const userInfo = await userInfoResponse.json();
+        console.log("User info:", userInfo);
+        setUsername(userInfo.username || userInfo.email || "User");
+
+        // Fetch todos
+        console.log("Making API call to fetch todos");
+        console.log("Token:", auth.user.id_token);
+
+        setApiInProgress(true);
+        const todoService = new TodoService(auth.user.id_token);
+        const data = await todoService.getAllTodos();
+        console.log("Response data:", data);
+        setTodos(data);
+      } catch (error) {
+        console.error("Error:", error);
+      } finally {
+        setApiInProgress(false);
+      }
+    };
+
+    fetchUserInfoAndTodos();
   }, [auth.isAuthenticated, auth.user]);
 
   const addTodo = (newTodo) => {
@@ -38,38 +60,27 @@ const App = () => {
     const todoToUpdate = todos.find((todo) => todo.todoId === id);
     if (!todoToUpdate) return;
 
-    // Toggle status
     const newStatus =
       todoToUpdate.todoStatus === "COMPLETED" ? "PENDING" : "COMPLETED";
 
-    // Send PATCH request to backend
     try {
       setApiInProgress(true);
-      const response = await fetch(`${API_URL}/todo`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${auth.user?.id_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: todoToUpdate.userId,
-          todoId: todoToUpdate.todoId,
-          status: newStatus.toLowerCase(),
-        }),
-      });
-      setApiInProgress(false);
+      const todoService = new TodoService(auth.user?.id_token);
+      await todoService.updateTodoStatus(
+        todoToUpdate.userId,
+        todoToUpdate.todoId,
+        newStatus
+      );
 
-      if (response.ok) {
-        setTodos(
-          todos.map((todo) =>
-            todo.todoId === id ? { ...todo, todoStatus: newStatus } : todo
-          )
-        );
-      } else {
-        console.error("Failed to update todo status");
-      }
+      setTodos(
+        todos.map((todo) =>
+          todo.todoId === id ? { ...todo, todoStatus: newStatus } : todo
+        )
+      );
     } catch (error) {
       console.error("Error updating todo status:", error);
+    } finally {
+      setApiInProgress(false);
     }
   };
 
@@ -79,26 +90,14 @@ const App = () => {
 
     try {
       setApiInProgress(true);
-      const response = await fetch(`${API_URL}/todo`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${auth.user?.id_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: todoToDelete.userId,
-          todoId: id,
-        }),
-      });
-      setApiInProgress(false);
+      const todoService = new TodoService(auth.user?.id_token);
+      await todoService.deleteTodo(todoToDelete.userId, id);
 
-      if (response.ok) {
-        setTodos(todos.filter((todo) => todo.todoId !== id));
-      } else {
-        console.error("Failed to delete todo");
-      }
+      setTodos(todos.filter((todo) => todo.todoId !== id));
     } catch (error) {
       console.error("Error deleting todo:", error);
+    } finally {
+      setApiInProgress(false);
     }
   };
 
@@ -125,12 +124,16 @@ const App = () => {
       <div className="todo-container">
         <TopMenu
           isLoggedIn={true}
-          profileName={auth.user?.profile.email}
+          username={username}
           onLogout={() => auth.removeUser()}
         />
         <h1>AWS Powered Todo App.</h1>
         {apiInProgress && <ProgressCircle />}
-        <TodoInput onAdd={addTodo} />
+        <TodoInput
+          onAdd={addTodo}
+          email={auth.user?.profile?.email || auth.user?.email}
+          accessToken={auth.user?.id_token}
+        />
         <TodoItemList
           todos={todos}
           handleToggle={toggleComplete}
