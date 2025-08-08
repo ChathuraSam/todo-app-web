@@ -54,23 +54,23 @@ const App = () => {
 
   if (auth.isAuthenticated) {
     return (
-      <div>
-        <pre> Hello: {auth.user?.profile.email} </pre>
-        <pre> ID Token: {auth.user?.id_token} </pre>
-        <pre> Access Token: {auth.user?.access_token} </pre>
-        <pre> Refresh Token: {auth.user?.refresh_token} </pre>
-
-        <button onClick={() => auth.removeUser()}>Sign out</button>
+      <div className="todo-container">
+        <TopMenu
+          isLoggedIn={true}
+          profileName={auth.user?.profile.email}
+          onLogout={() => auth.removeUser()}
+        />
+        <h1>AWS Powered Todo App.</h1>
+        {apiInProgress && <ProgressCircle />}
+        <TodoInput onAdd={addTodo} />
+        <TodoItemList
+          todos={todos}
+          handleToggle={toggleComplete}
+          handleDelete={deleteTodo}
+        />
       </div>
     );
   }
-
-  // return (
-  //   <div>
-  //     <button onClick={() => auth.signinRedirect()}>Sign in</button>
-  //     <button onClick={() => signOutRedirect()}>Sign out</button>
-  //   </div>
-  // );
 
   const toggleComplete = async (id) => {
     const todoToUpdate = todos.find((todo) => todo.todoId === id);
@@ -86,6 +86,7 @@ const App = () => {
       const response = await fetch(`${API_URL}/todo`, {
         method: "PATCH",
         headers: {
+          Authorization: `Bearer ${auth.user?.id_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -119,10 +120,11 @@ const App = () => {
       const response = await fetch(`${API_URL}/todo`, {
         method: "DELETE",
         headers: {
+          Authorization: `Bearer ${auth.user?.id_token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: "chathuras940@gmail.com",
+          userId: todoToDelete.userId,
           todoId: id,
         }),
       });
@@ -140,20 +142,9 @@ const App = () => {
 
   return (
     <div className="todo-container">
-      <div>
-        <button onClick={() => auth.signinRedirect()}>Sign in</button>
-        <button onClick={() => signOutRedirect()}>Sign out</button>
-      </div>
-      <TopMenu />
+      <TopMenu isLoggedIn={false} onLogin={() => auth.signinRedirect()} />
       <h1>AWS Powered Todo App.</h1>
-      {console.log(apiInProgress)}
-      {apiInProgress && <ProgressCircle />}
-      <TodoInput onAdd={addTodo} />
-      <TodoItemList
-        todos={todos}
-        handleToggle={toggleComplete}
-        handleDelete={deleteTodo}
-      />
+      <p>Please sign in to access your todos.</p>
     </div>
   );
 };
